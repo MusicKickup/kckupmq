@@ -1,7 +1,7 @@
 {
   "name": "kckupmq",
   "description": "KckupMQ is wrapper library with common interface for different Message Queue implementations",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "homepage": "https://github.com/nemein/kckupmq",
   "author": "Jerry Jalava <jerry@musickickstarter.com>",
   "repository": {
