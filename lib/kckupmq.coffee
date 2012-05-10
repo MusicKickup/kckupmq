@@ -112,6 +112,7 @@ class RedisMQ extends KckupMQ
       @sub.on 'message', (channel, message) =>
         data = JSON.parse message
         @getTopics (err, topics) =>
+          return unless topics
           return if topics.indexOf(data.topic) == -1
           @_popFromQueue data.topic, (err, item) =>
             return unless item
