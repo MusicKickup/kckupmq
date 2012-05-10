@@ -1,0 +1,3 @@
+*.tmproj
+node_modules/*
+tmp-js/*

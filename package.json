@@ -1,0 +1,28 @@
+{
+  "name": "kckupmq",
+  "description": "KckupMQ is wrapper library with common interface for different Message Queue implementations",
+  "version": "0.3.0",
+  "homepage": "http://musickickstarter.com",
+  "author": "Jerry Jalava <jerry@musickickstarter.com>",
+  "engines": {
+    "node": "0.6.x"
+  },
+  "dependencies": {
+    "coffee-script": "1.2.x"
+    ,"underscore": "1.3.x"
+    ,"node-uuid": "1.3.x"
+    ,"async": "0.1.x"
+    ,"hiredis": "0.1.x"
+    ,"redis": "0.7.x"
+    ,"rabbit.js": "0.2.x"
+  },
+  "devDependencies": {
+    "vows": "0.6.x"
+    ,"coffeedoc": "0.1.x"
+    ,"jshint": "0.7.x"
+  },
+  "scripts": {
+    "test": "vows test/*.coffee --spec"
+  }
+}
+
