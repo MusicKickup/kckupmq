@@ -2,8 +2,12 @@
   "name": "kckupmq",
   "description": "KckupMQ is wrapper library with common interface for different Message Queue implementations",
   "version": "0.3.0",
-  "homepage": "http://musickickstarter.com",
+  "homepage": "https://github.com/nemein/kckupmq",
   "author": "Jerry Jalava <jerry@musickickstarter.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nemein/kckupmq.git"
+  },
   "engines": {
     "node": "0.6.x"
   },
@@ -25,4 +29,3 @@
     "test": "vows test/*.coffee --spec"
   }
 }
-
