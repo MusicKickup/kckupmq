@@ -1,5 +1,7 @@
 # Wrapper library with common interface for different Message Queue implementations
 
+Built for [Music Kickstarter](http://musickickstarter.com/), the first cloud-based record label.
+
 This project is under development, but Redis backend is already in use in production servers.
 
 ## TODO:
@@ -10,4 +12,3 @@ This project is under development, but Redis backend is already in use in produc
 
 * Redis (Persistent)
 * RabbitMQ (currently PubSub only, no persistence on library end)
-
