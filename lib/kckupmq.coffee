@@ -54,6 +54,7 @@ class RedisMQ extends KckupMQ
     no_ready_check: false
   
   clientId: null
+  clientInstanceId: null
   pub_connected: -1
   sub_connected: -1
   
@@ -64,6 +65,8 @@ class RedisMQ extends KckupMQ
     @redis.debug_mode = false
     
     @clientId = @_generateClientId() unless @clientId
+    
+    @clientInstanceId = "#{@clientId}-#{uuid()}"
     
     opts = {}
     if @config.db
@@ -146,7 +149,7 @@ class RedisMQ extends KckupMQ
         cb()
       ]
       'saveTopics': ['addNewIfNecessary', (cb) =>
-        @pub.hset '_kckupmq_map', @clientId, JSON.stringify(client_topics), (err, res) ->
+        @pub.hset '_kckupmq_map', @clientInstanceId, JSON.stringify(client_topics), (err, res) ->
           return cb(err) if err
           cb()
       ]
@@ -186,11 +189,11 @@ class RedisMQ extends KckupMQ
         unless client_topics.length          
           @sub.unsubscribe @clientId
             
-          @pub.hdel '_kckupmq_map', @clientId, (err, res) ->
+          @pub.hdel '_kckupmq_map', @clientInstanceId, (err, res) ->
             return cb(err) if err
             cb()
         else
-          @pub.hset '_kckupmq_map', @clientId, JSON.stringify(client_topics), (err, res) ->
+          @pub.hset '_kckupmq_map', @clientInstanceId, JSON.stringify(client_topics), (err, res) ->
             return cb(err) if err
             cb()
       ]
@@ -241,7 +244,7 @@ class RedisMQ extends KckupMQ
     ###
     ###
     topics = []
-    @pub.hget '_kckupmq_map', @clientId, (err, res) ->
+    @pub.hget '_kckupmq_map', @clientInstanceId, (err, res) ->
       return next(err) if err
       topics = JSON.parse(res) if res
       next(null, topics)
@@ -253,7 +256,7 @@ class RedisMQ extends KckupMQ
     @pub.lpop queue_name, (err, res) ->
       return next(err, null) if err or !res
       next(null, JSON.parse(res))
-  
+
   _getTopicQueueName: (topic) ->
     ###
     ###
