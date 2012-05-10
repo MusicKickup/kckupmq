@@ -349,8 +349,8 @@ exports.instance = (type, config, client_id) ->
   
   config ?= {}
   
-  if _instance_type and _instance_type == type
-    return _instance
+  # if _instance_type and _instance_type == type
+  #   return _instance
   
   _instance_type = type
   if type == 'redis'
