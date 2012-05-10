@@ -37,7 +37,7 @@ class KckupMQ extends EventEmitter
   getSize: (topic, next) -> throw new Error("getSize not implemented")
   clearTopicQueue: (topic, next) -> throw new Error("clearTopicQueue not implemented")
   getTopics: (next) -> throw new Error("getTopics not implemented")
-  disconnect: () -> throw new Error("disconnect not implemented")
+  disconnect: (next) -> throw new Error("disconnect not implemented")
 
 exports.KckupMQ = KckupMQ
     
@@ -51,8 +51,11 @@ class RedisMQ extends KckupMQ
     port: 6379
     auth:
       password: null
+    no_ready_check: false
   
   clientId: null
+  pub_connected: -1
+  sub_connected: -1
   
   initialize: (@clientId) ->
     ###
@@ -65,52 +68,59 @@ class RedisMQ extends KckupMQ
     opts = {}
     if @config.db
       opts.db = @config.db
+    if @config.no_ready_check
+      opts.no_ready_check = @config.no_ready_check
     
     @_connectPubRedis(opts)
     @_connectSubRedis(opts)
     
-    @sub.on 'message', (channel, message) =>
-      data = JSON.parse message
-      @getTopics (err, topics) =>
-        return if topics.indexOf(data.topic) == -1
-        @_popFromQueue data.topic, (err, item) =>
-          return unless item
-          @emit data.topic, item.id, item.value
-  
   _connectPubRedis: (opts) ->
     ###
-    ###    
+    ###
+    return if @pub_connected == 1    
+    @pub_connected = 0
+    
     @pub = @redis.createClient @config.port, @config.host, opts    
     
     if @config.auth and @config.auth.password
       @pub.auth @config.auth.password
     
-    @pub.on 'connect', () ->
-      console.log '"publish" redis client connected'
+    @pub.on 'connect', () =>
+      #console.log '"publish" redis client connected'
+      @pub_connected = 1      
     @pub.on 'error', (error) ->
       console.error 'error in "publish" redis client',error
     @pub.on 'end', () =>
-      console.log '"publish" redis client disconnected',arguments
-      console.log 'reconnecting'
-      @_connectPubRedis(opts)
+      #console.log '"publish" redis client disconnected',arguments
+      @pub_connected = -1
       
   _connectSubRedis: (opts) ->
     ###
     ###
-
+    return if @sub_connected == 1    
+    @pub_connected = 0
+    
     @sub = @redis.createClient @config.port, @config.host, opts
     
     if @config.auth and @config.auth.password
       @sub.auth @config.auth.password
-
-    @sub.on 'connect', () ->
-      console.log '"subscribe" redis client connected'
+    
+    @sub.on 'connect', () =>
+      #console.log '"subscribe" redis client connected'
+      @sub_connected = 1
+      
+      @sub.on 'message', (channel, message) =>
+        data = JSON.parse message
+        @getTopics (err, topics) =>
+          return if topics.indexOf(data.topic) == -1
+          @_popFromQueue data.topic, (err, item) =>
+            return unless item
+            @emit data.topic, item.id, item.value
     @sub.on 'error', (error) ->
       console.error 'error in "subscribe" redis client',error
     @sub.on 'end', () =>
-      console.log '"subscribe" redis client disconnected',arguments
-      console.log 'reconnecting'
-      @_connectSubRedis(opts)
+      #console.log '"subscribe" redis client disconnected',arguments
+      @sub_connected = -1
   
   subscribe: (topic, next) ->
     ###
@@ -172,9 +182,9 @@ class RedisMQ extends KckupMQ
         cb()
       ]
       'saveTopics': ['removeFromExisting', (cb) =>
-        unless client_topics.length
+        unless client_topics.length          
           @sub.unsubscribe @clientId
-
+            
           @pub.hdel '_kckupmq_map', @clientId, (err, res) ->
             return cb(err) if err
             cb()
@@ -257,6 +267,11 @@ class RedisMQ extends KckupMQ
     ###
     ###
     uuid()
+  
+  disconnect: (next) ->
+    @pub.quit()
+    @sub.quit()
+    next?(null)
 
 exports.RedisMQ = RedisMQ
 
