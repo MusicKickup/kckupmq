@@ -140,6 +140,13 @@ suite.addBatch
         assert.isNotNull size
         assert.isNumber size
         assert.equal size, 0
+    'should disconnect properly':
+      topic: ->
+        instance = new (require("#{__dirname}/../lib/kckupmq").RedisMQ)(@config)
+        instance
+      'without error': (topic) ->
+        assert.isFalse topic.pub.connected
+        assert.isFalse topic.sub.connected
 
 suite.addBatch
   'kckupMQ.RabbitMQ':

@@ -37,7 +37,7 @@ class KckupMQ extends EventEmitter
   getSize: (topic, next) -> throw new Error("getSize not implemented")
   clearTopicQueue: (topic, next) -> throw new Error("clearTopicQueue not implemented")
   getTopics: (next) -> throw new Error("getTopics not implemented")
-  disconnect: () -> throw new Error("disconnect not implemented")
+  disconnect: (next) -> throw new Error("disconnect not implemented")
 
 exports.KckupMQ = KckupMQ
     
@@ -72,7 +72,8 @@ class RedisMQ extends KckupMQ
       opts.no_ready_check = @config.no_ready_check
     
     @_connectPubRedis(opts)
-  
+    @_connectSubRedis(opts)
+    
   _connectPubRedis: (opts) ->
     ###
     ###
@@ -86,8 +87,7 @@ class RedisMQ extends KckupMQ
     
     @pub.on 'connect', () =>
       #console.log '"publish" redis client connected'
-      @pub_connected = 1
-      @_connectSubRedis(opts)
+      @pub_connected = 1      
     @pub.on 'error', (error) ->
       console.error 'error in "publish" redis client',error
     @pub.on 'end', () =>
@@ -268,9 +268,10 @@ class RedisMQ extends KckupMQ
     ###
     uuid()
   
-  disconnect: ->
+  disconnect: (next) ->
     @pub.quit()
     @sub.quit()
+    next?(null)
 
 exports.RedisMQ = RedisMQ
 
