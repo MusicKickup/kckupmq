@@ -14,7 +14,7 @@
     "url": "git://github.com/nemein/kckupmq.git"
   },
   "engines": {
-    "node": "0.6.x"
+    "node": ">=0.6.0"
   },
   "dependencies": {
     "coffee-script": "1.2.x"
