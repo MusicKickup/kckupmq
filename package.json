@@ -2,7 +2,7 @@
   "name": "kckupmq",
   "description": "KckupMQ is wrapper library with common interface for different Message Queue implementations",
   "keywords": ["queue", "mq", "redis", "rabbitmq", "amqp"],
-  "version": "0.3.5",
+  "version": "0.3.6",
   "homepage": "https://github.com/nemein/kckupmq",
   "author": "Jerry Jalava <jerry@musickickstarter.com>",
   "licenses": [{
