@@ -11,4 +11,4 @@ This project is under development, but Redis backend is already in use in produc
 ## Currently supported backends
 
 * Redis (Persistent)
-* RabbitMQ (currently PubSub only, no persistence on library end)
+* RabbitMQ (currently PubSub only, no persistence on library end) (requires "npm install rabbit.js")
